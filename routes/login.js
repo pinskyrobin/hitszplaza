@@ -10,7 +10,7 @@ const db_url = 'mongodb://121.4.40.110:27017';
 router.get('/', function (req, res, next) {
     let username = req.query.username
     let password = req.query.password
-    let _id = req.query.WX_OPENID
+    let _openid = req.query.WX_OPENID
     let cookies = []
     login.login(username, password)
         .then(data => {
@@ -22,7 +22,7 @@ router.get('/', function (req, res, next) {
             } else {
                 cookies = data.JWcookie
                 console.log(cookies)
-                insertIn(_id, username, password, data)
+                insertIn(_openid, username, password, data)
 
                 res.json(data)
 
@@ -32,13 +32,13 @@ router.get('/', function (req, res, next) {
         })
 });
 
-async function insertIn(_id, username, password, data) {
+async function insertIn(_openid, username, password, data) {
     MongoClient.connect(db_url, {useUnifiedTopology: true}, function (err, db) {
         if (err) throw err;
         console.log('successful connect!!!')
         let collection_stu = db.db("hitszplaza").collection('STU_INFO')
         let student = {
-            _id: _id,
+            _openid: _openid,
             username: username,
             password: password,
             cookie: data.JWcookie,
@@ -48,7 +48,7 @@ async function insertIn(_id, username, password, data) {
 
         //删除之前的
         collection_stu.deleteMany({
-            '_id': _id,
+            '_openid': _openid,
             'username': username,
         }, function (err, obj) {
             if (err) console.log(err)

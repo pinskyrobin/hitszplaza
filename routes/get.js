@@ -4,7 +4,7 @@ const router = express.Router();
 const login = require('../bin/getSchedule/login')
 const get = require('../bin/getSchedule/get')
 
-const MongoClient = require('mongodb').aMongoClient;
+const MongoClient = require('mongodb').MongoClient;
 // var url = "mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb";
 const db_url = 'mongodb://121.4.40.110:27017';
 
@@ -16,11 +16,11 @@ async function _callback (req, res) {
 // function _callback (req, res) {
 
     let cookies = []
-    let _id = req.query.WX_OPENID
+    let _openid = req.query.WX_OPENID
     let username = req.query.username
-    // 根据_id找到cookie
+    // 根据_openid找到cookie
     // 从数据库找到cookie
-    let result = await queryDB_2(_id, username)
+    let result = await queryDB_2(_openid, username)
     console.log('result',result)
     cookies = result.cookie
     let password = result.password
@@ -51,7 +51,7 @@ async function _callback (req, res) {
                 }else{//登上啦
                     //先把cookie存数据库
                     let cookie = data.JWcookie
-                    updateCookie(_id,username,cookie)
+                    updateCookie(_openid,username,cookie)
                     //重新拉去课表
                     _callback(req,res)
                 }
@@ -59,7 +59,7 @@ async function _callback (req, res) {
 
         }else{
             //课表存数据库
-            backUp(_id,username,term,data)
+            backUp(_openid,username,term,data)
             res.json(data)
             res.end()
         }
@@ -68,14 +68,14 @@ async function _callback (req, res) {
 }
 
 //弃用了，js真的是屎
-async function queryDB(_id,username){
+async function queryDB(_openid,username){
     MongoClient.connect(db_url, (err, db) => {
         if (err)
             throw err;
         console.log('successful connect!!!');
         let collection_stu = db.db("hitszplaza").collection('STU_INFO');
         student = {
-            _id: _id,
+            _openid: _openid,
             username: username,
         };
         console.log(student);
@@ -98,7 +98,7 @@ async function queryDB(_id,username){
     });
 }
 
-async function queryDB_2(_id,username){
+async function queryDB_2(_openid,username){
 
 
     let conn = null
@@ -109,7 +109,7 @@ async function queryDB_2(_id,username){
 
         let collection_stu = await conn.db("hitszplaza").collection('STU_INFO');
         student = {
-            _id: _id,
+            _openid: _openid,
             username: username,
         };
         console.log(student);
@@ -126,7 +126,7 @@ async function queryDB_2(_id,username){
 }
 
 //cookie更新
-async function updateCookie(_id,username,cookies){
+async function updateCookie(_openid,username,cookies){
 
     let conn = null
 
@@ -137,7 +137,7 @@ async function updateCookie(_id,username,cookies){
 
         let collection_stu = await conn.db("hitszplaza").collection('STU_INFO');
         student = {
-            _id: _id,
+            _openid: _openid,
             username: username,
         };
         console.log(student);
@@ -157,7 +157,7 @@ async function updateCookie(_id,username,cookies){
 }
 
 
-async function backUp(_id,username,term,data){
+async function backUp(_openid,username,term,data){
     let conn = null;
     let student;
     try {
@@ -166,7 +166,7 @@ async function backUp(_id,username,term,data){
 
         let collection_course = await conn.db("hitszplaza").collection('STU_INFO_BAK');
         student = {
-            _id: _id,
+            _openid: _openid,
             username: username,
         };
         // console.log(student);
