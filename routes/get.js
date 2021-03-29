@@ -6,7 +6,7 @@ const get = require('../bin/getSchedule/get')
 
 const MongoClient = require('mongodb').aMongoClient;
 // var url = "mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb";
-const db_url = 'mongodb://localhost:27017';
+const db_url = 'mongodb://121.4.40.110:27017';
 
 router.get('/',(req,res)=>{
     _callback(req,res)
