@@ -48,7 +48,7 @@ app.use('/login', loginRouter);
 
 
 // 监听3000端口
-let server = app.listen(3000, '127.0.0.1', () => {
+let server = app.listen(3000, '121.4.40.110', () => {
     let host = server.address().address // host域
     let port = server.address().port // 端口号
 
