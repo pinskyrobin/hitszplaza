@@ -16,11 +16,11 @@ async function _callback (req, res) {
 // function _callback (req, res) {
 
     let cookies = []
-    let _openid = req.query.WX_OPENID
+    let _id = req.query.WX_OPENID
     let username = req.query.username
-    // 根据_openid找到cookie
+    // 根据_id找到cookie
     // 从数据库找到cookie
-    let result = await queryDB_2(_openid, username)
+    let result = await queryDB_2(_id, username)
     console.log('result',result)
     cookies = result.cookie
     let password = result.password
@@ -51,7 +51,7 @@ async function _callback (req, res) {
                 }else{//登上啦
                     //先把cookie存数据库
                     let cookie = data.JWcookie
-                    updateCookie(_openid,username,cookie)
+                    updateCookie(_id,username,cookie)
                     //重新拉去课表
                     _callback(req,res)
                 }
@@ -59,7 +59,7 @@ async function _callback (req, res) {
 
         }else{
             //课表存数据库
-            backUp(_openid,username,term,data)
+            backUp(_id,username,term,data)
             res.json(data)
             res.end()
         }
@@ -68,14 +68,14 @@ async function _callback (req, res) {
 }
 
 //弃用了，js真的是屎
-async function queryDB(_openid,username){
+async function queryDB(_id,username){
     MongoClient.connect(db_url, (err, db) => {
         if (err)
             throw err;
         console.log('successful connect!!!');
-        let collection_stu = db.db("STU_INFO").collection('stu');
+        let collection_stu = db.db("hitszplaza").collection('STU_INFO');
         student = {
-            _openid: _openid,
+            _id: _id,
             username: username,
         };
         console.log(student);
@@ -98,7 +98,7 @@ async function queryDB(_openid,username){
     });
 }
 
-async function queryDB_2(_openid,username){
+async function queryDB_2(_id,username){
 
 
     let conn = null
@@ -107,9 +107,9 @@ async function queryDB_2(_openid,username){
         conn = await MongoClient.connect(db_url, {useUnifiedTopology: true})
         console.log('successful connect!!!');
 
-        let collection_stu = await conn.db("STU_INFO").collection('stu');
+        let collection_stu = await conn.db("hitszplaza").collection('STU_INFO');
         student = {
-            _openid: _openid,
+            _id: _id,
             username: username,
         };
         console.log(student);
@@ -126,7 +126,7 @@ async function queryDB_2(_openid,username){
 }
 
 //cookie更新
-async function updateCookie(_openid,username,cookies){
+async function updateCookie(_id,username,cookies){
 
     let conn = null
 
@@ -135,9 +135,9 @@ async function updateCookie(_openid,username,cookies){
         conn = await MongoClient.connect(db_url, {useUnifiedTopology: true})
         console.log('successful connect!!!');
 
-        let collection_stu = await conn.db("STU_INFO").collection('stu');
+        let collection_stu = await conn.db("hitszplaza").collection('STU_INFO');
         student = {
-            _openid: _openid,
+            _id: _id,
             username: username,
         };
         console.log(student);
@@ -157,16 +157,16 @@ async function updateCookie(_openid,username,cookies){
 }
 
 
-async function backUp(_openid,username,term,data){
+async function backUp(_id,username,term,data){
     let conn = null;
     let student;
     try {
         conn = await MongoClient.connect(db_url, {useUnifiedTopology: true})
         console.log('successful connect!!!');
 
-        let collection_course = await conn.db("STU_INFO").collection('course_backup');
+        let collection_course = await conn.db("hitszplaza").collection('STU_INFO_BAK');
         student = {
-            _openid: _openid,
+            _id: _id,
             username: username,
         };
         // console.log(student);
