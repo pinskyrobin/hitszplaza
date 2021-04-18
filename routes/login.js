@@ -7,7 +7,7 @@ const MongoClient = require('mongodb').MongoClient;
 // var url = "mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb";
 const db_url = 'mongodb://121.4.40.110:27017';
 
-router.get('/', function (req, res, next) {
+router.get('/login', function (req, res, next) {
     let username = req.query.username
     let password = req.query.password
     let _openid = req.query.WX_OPENID
